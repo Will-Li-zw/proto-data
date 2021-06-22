@@ -10,13 +10,13 @@ export default () => {
 
   const { widgets } = jsonTemplate;
 
-  const data = [
-    ['李晓明', '180', '66'],
-    ['王晓明', '160', '76'],
-    ['黄晓明', '190', '86'],
-  ];
-
   console.log(widgets);
 
   return <div></div>;
 };
+
+const data = [
+  ['李晓明', '180', '66'],
+  ['王晓明', '160', '76'],
+  ['黄晓明', '190', '86'],
+];
