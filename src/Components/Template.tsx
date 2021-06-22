@@ -1,6 +1,8 @@
-import React, { useState, ChangeEventHandler } from 'react';
+import React, { useState, ChangeEventHandler, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 import { createUseStyles } from 'react-jss';
 import { Button } from '@material-ui/core';
+import templateState from '../States/template.state';
 import TextWidget, { ITextWidget } from './TextWidget';
 import TemplateController from './TemplateContoller';
 import TextWidgetField from './TextWidgetField';
@@ -28,16 +30,19 @@ export default () => {
   const [templateHeight, setHeight] = useState(500);
   const [templateBg, setBg] = useState('');
   const [widgets, setWidgets] = useState([] as ITextWidget[]);
+  const [_, setTemplateState] = useRecoilState(templateState);
 
   const templateProps = { width: templateWidth, height: templateHeight };
 
+  const templateData = JSON.stringify({ ...templateProps, background: templateBg, widgets });
+
   const classes = useStyles(templateProps);
 
-  const handleWidthChange: ChangeEventHandler<HTMLInputElement> = (evt) =>
-    setWidth(Number(evt.target.value));
+  useEffect(() => setTemplateState(templateData), [templateData]);
 
-  const handleHeightChange: ChangeEventHandler<HTMLInputElement> = (evt) =>
-    setHeight(Number(evt.target.value));
+  const handleWidthChange: ChangeEventHandler<HTMLInputElement> = (evt) => setWidth(Number(evt.target.value));
+
+  const handleHeightChange: ChangeEventHandler<HTMLInputElement> = (evt) => setHeight(Number(evt.target.value));
 
   const handleBgChange: ChangeEventHandler<HTMLInputElement> = (evt) => {
     const reader = new FileReader();
@@ -57,13 +62,7 @@ export default () => {
   return (
     <div className={classes.container}>
       <div className={classes.template} data-testid="template">
-        {templateBg ? (
-          <img
-            className={classes.bgImg}
-            src={templateBg}
-            alt="template-bg-img"
-          />
-        ) : null}
+        {templateBg ? <img className={classes.bgImg} src={templateBg} alt="template-bg-img" /> : null}
         {widgets.map((widget) => {
           const { title, key, styles } = widget;
           return <TextWidget title={title} key={key} styles={styles} />;
@@ -88,11 +87,7 @@ export default () => {
           添加文字组件
         </Button>
         {widgets.map((widget) => (
-          <TextWidgetField
-            key={widget.key}
-            widget={widget}
-            handleFieldChange={handleFieldChange}
-          />
+          <TextWidgetField key={widget.key} widget={widget} handleFieldChange={handleFieldChange} />
         ))}
       </div>
     </div>
